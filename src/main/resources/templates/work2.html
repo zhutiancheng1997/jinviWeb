@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!--<link rel="stylesheet" href="../static/bootstrap-3.3.7-dist/css/bootstrap.min.css">-->
+    <link rel="stylesheet" href="../static/bootstrap-3.3.7-dist/css/bootstrap-table.css">
+    <!--<link rel="stylesheet" href="../static/bootstrap-select-1.13.9/css/bootstrap-select.css">-->
+    <link rel="stylesheet" href="../static/layui/css/layui.css">
+    <title>数据查询</title>
+</head>
+<body>
+    <ul class="layui-nav" lay-filter="">
+        <li class="layui-nav-item ">
+            <a href="/work">单卷查询</a>
+        </li>
+        <li class="layui-nav-item">
+            <a href="/work1">多卷对比查询</a>
+        </li>
+        <li class="layui-nav-item layui-this">
+            <a href="">质量数据查询</a>
+        </li>
+    </ul>
+
+    <div class="layui-row">
+        <div class="layui-col-md5">
+            <label>选择时间范围:
+            </label>
+            <div class="layui-inline">
+                <input type="text" class="layui-input" id="test1" placeholder="起始时间">
+            </div>
+            <i class="layui-icon layui-icon-right"></i>
+            <div class="layui-inline">
+                <input type="text" class="layui-input" id="test2" placeholder="结束时间">
+            </div>
+            <button type="button" class="layui-btn" onclick="searchIdByTime()">id检索</button>
+
+
+        </div>
+        <div class="layui-col-md2 layui-form">
+
+            <select id="materialPicker" lay-verify="" lay-search>
+                <option value="">--请选择--</option>
+                <option value="010">1222</option>
+                <option value="010">2111</option>
+            </select>
+        </div>
+        <div class="layui-col-md5 layui-form">
+            <button type="button" class="layui-btn" onclick="addMaterialId()">添加</button>
+            <button type="button" class="layui-btn" onclick="removeMaterialId()">移除</button>
+        </div>
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-md12">
+            <label>经历设备</label>
+            <!--该卷经历的设备数据-->
+            <table  id="equipTable" class="layui-table" lay-skin="">
+
+            </table>
+            <label>参数列表</label>
+            <!--PDO数据-->
+            <table  id="qualityTable" class="layui-table" lay-skin="line">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>屈服强度</th>
+                        <th>延伸率</th>
+                        <th>疲劳强度</th>
+                        <th>电导率</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                       <td>63538</td>
+                       <td>11</td>
+                       <td>20</td>
+                       <td>23</td>
+                       <td>58</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-md12">
+            <div style="height: 500px" id="chart"></div>
+        </div>
+    </div>
+<script src="../static/jquery-1.12.4.js"></script>
+<!--<script src="../static/bootstrap-3.3.7-dist/js/bootstrap.js"></script>-->
+<script src="../static/bootstrap-3.3.7-dist/js/bootstrap-table.js"></script>
+<!--<script src="../static/bootstrap-select-1.13.9/js/bootstrap-select.js"></script>-->
+<script src="../static/echarts/echarts.js"></script>
+<script src="../static/layui/layui.all.js"></script>
+<!--<script src="../static/js/work1.js"></script>-->
+<script src="../static/js/work2.js"></script>
+<script src="../static/js/util.js"></script>
+</body>
+</html>

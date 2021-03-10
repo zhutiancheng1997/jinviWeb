@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--<html lang="en"  xmlns:th="http://www.thymeleaf.org">-->
+<!--<html lang="en"  xmlns:th="http://www.w3.org/1999/xhtml">-->
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../static/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/bootstrap-3.3.7-dist/css/bootstrap-table.css">
+    <!--<link rel="stylesheet" href="../static/bootstrap-select-1.13.9/css/bootstrap-select.css">-->
+    <link rel="stylesheet" href="../static/layui/css/layui.css">
+    <title>数据查询</title>
+
+
+
+</head>
+<body>
+    <!--nav bar-->
+    <ul class="layui-nav" lay-filter="">
+        <li class="layui-nav-item layui-this">
+            <a href="">单卷查询</a>
+        </li>
+        <li class="layui-nav-item">
+            <a href="/work1">多卷对比查询</a>
+        </li>
+        <li class="layui-nav-item">
+            <a href="/work2">质量数据查询</a>
+        </li>
+    </ul>
+    <!--查询输入框-->
+
+    <div class="layui-row">
+        <div class="layui-col-md4 " >
+            <div>
+                <input id="PDOId" type="text" name="title" required lay-verify="required" placeholder="输入卷号查询" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <!--&nbsp;&nbsp;&nbsp;&nbsp;-->
+        <div class=" layui-col-md2" >
+            <button class="layui-btn" onclick="searchEquip()">立即提交</button>
+        </div>
+    </div>
+<!--layui card-->
+<div class="layui-collapse">
+    <!--设备表-->
+    <div class="layui-row">
+        <div class="layui-col-md12 layui-colla-item">
+            <!--<p style="font-size: 15px">-->
+                <!--设备:-->
+            <!--</p>-->
+            <h2 class="layui-colla-title">经历设备</h2>
+            <div class="layui-colla-content layui-show">
+                <table id="equipTable"  class="table table-bordered">
+                <thead></thead>
+                <tbody>
+                    <!--<tr>-->
+                        <!--<td>黄铜炉</td>-->
+                        <!--<td>无芯炉</td>-->
+                        <!--<td>有芯炉</td>-->
+                        <!--<td>无氧铜</td>-->
+                        <!--<td>青铜</td>-->
+                        <!--<td>白铜</td>-->
+                        <!--<td>新黄铜</td>-->
+                        <!--<td>锯切</td>-->
+                        <!--<td>步进炉</td>-->
+                        <!--<td>热轧机</td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td>铣面机</td>-->
+                        <!--<td>粗轧机</td>-->
+                        <!--<td>中轧机</td>-->
+                        <!--<td>WF4</td>-->
+                        <!--<td>WF20</td>-->
+                        <!--<td>SDW20</td>-->
+                        <!--<td>650</td>-->
+                        <!--<td>1250</td>-->
+                        <!--<td>WSP</td>-->
+                        <!--<td>钟罩炉</td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td>650纵剪</td>-->
+                    <!--</tr>-->
+                </tbody>
+
+            </table>
+            </div>
+        </div>
+    </div>
+    <!--<table id="pdoTable" class="layui-table"></table>-->
+
+    <!--PDO信息,PDP echarts图-->
+    <div class="layui-row">
+        <div class="layui-col-md12 layui-colla-item">
+            <h2 class="layui-colla-title">PDO信息</h2>
+            <div class="layui-colla-content layui-show">
+            <table id="pdoTable"></table>
+            </div>
+        </div>
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-md12 layui-colla-item">
+            <h2 class="layui-colla-title">PDP趋势图</h2>
+            <div class="layui-colla-content layui-show">
+            <div style="height: 500px" id="pdpChart"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<!--<script type="text/html" id="tableBar">-->
+    <!--<a class="layui-btn layui-btn-xs" lay-even="del">导出数据</a>-->
+<!--</script>-->
+<script src="../static/jquery-1.12.4.js"></script>
+<script src="../static/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+<script src="../static/bootstrap-3.3.7-dist/js/bootstrap-table.js"></script>
+<!--<script src="../static/bootstrap-select-1.13.9/js/bootstrap-select.js"></script>-->
+<script src="../static/echarts/echarts.js"></script>
+<script src="../static/layui/layui.all.js"></script>
+<script src="../static/js/work.js"></script>
+<script src="../static/js/util.js"></script>
+
+</body>
+
+</html>

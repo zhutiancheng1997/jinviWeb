@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--<html lang="en"  xmlns:th="http://www.thymeleaf.org">-->
+<!--<html lang="en"  xmlns:th="http://www.w3.org/1999/xhtml">-->
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../static/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/bootstrap-3.3.7-dist/css/bootstrap-table.css">
+    <link rel="stylesheet" href="../static/bootstrap-select-1.13.9/css/bootstrap-select.css">
+    <link rel="stylesheet" href="../static/layui/css/layui.css">
+    <!--<link rel="stylesheet" href="../static/layui/layer.css">-->
+    <title>数据查询</title>
+
+
+
+</head>
+<body>
+    <!--查询输入框-->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="input-group">
+                <div class="input-group-btn">
+                    <button id="choose_btn" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">PDO<span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" onclick="PDOChoose()">PDO</a></li>
+                        <li><a href="#" onclick="PDPChoose()">PDP</a></li>
+                        <li><a href="#" onclick="PDRChoose()">PDR</a></li>
+                        <!--<li role="separator" class="divider"></li>-->
+                        <!--<li><a href="#">Separated link</a></li>-->
+                    </ul>
+                </div><!-- /btn-group -->
+                <input id="id_input" type="text" class="form-control" aria-label="...">
+            </div><!-- /input-group -->
+        </div><!-- /.col-lg-6 -->
+        <div class="col-lg-2">
+            <button class="btn btn-default" type="button" onclick="searchPDX()">查询</button>
+        </div>
+        <div class="col-lg-4"></div>
+    </div><!-- /.row -->
+
+    <!--加载查询得到的结果tab-->
+    <div class="row" >
+        <div class="col-lg-12">
+            <div id="pdpTab" style="display: none" class="layui-tab" lay-allowClose="true" lay-filter="pdpTab" >
+                <ul id="pdpTabUl" class="layui-tab-title">
+                    <!--<li class="layui-this">网站设置</li>-->
+                    <!--<li>用户基本管理</li>-->
+
+                </ul>
+                <div id="pdpTabUlContent" class="layui-tab-content">
+                    <!--<div class="layui-tab-item layui-show">1</div>-->
+                    <!--<div class="layui-tab-item">2</div>-->
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!--数据表-->
+    <div class="row">
+        <div class="col-lg-6">
+            <table id="dataTable" class="table table-striped">
+            </table>
+        </div>
+    </div>
+
+    <!--<div class="row">-->
+        <!--&lt;!&ndash;echarts图&ndash;&gt;-->
+        <!--<div style="height: 500px" class ="col-lg-12" id="PDPChart"></div>-->
+    <!--</div>-->
+
+    <!--模态框-->
+    <div class="row">
+        <div class="col-lg-12 modal fade" id="PDPModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">列选择</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!--<div class="col-lg-2">-->
+                            <label>x轴</label>
+                            <select id="PDPPicker1" class="selectpicker" data-live-search="true" title="--下拉选择--">
+                            </select>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <!--</div>-->
+                        <!--<div class="col-lg-2">-->
+                            <label>y轴</label>
+                            <select id="PDPPicker2" class="selectpicker" data-live-search="true" title="--下拉选择--">
+                            </select>
+                        <!--</div>-->
+                        <!--列名下拉菜单-->
+                        <!--<select id="PDPPicker1" class="selectpicker" title="&#45;&#45;下拉选择&#45;&#45;">-->
+                        <!--</select>-->
+                        <!--<select id="PDPPicker2" class="selectpicker" title="&#45;&#45;下拉选择&#45;&#45;">-->
+                        <!--</select>-->
+                    </div>
+
+                    <div class="modal-footer">
+                        <!--<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
+                        <button type="button" class="btn btn-primary" onclick="PDPModalOnClick()">确定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+<script src="../static/jquery-1.12.4.js"></script>
+<script src="../static/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+<script src="../static/bootstrap-3.3.7-dist/js/bootstrap-table.js"></script>
+<script src="../static/bootstrap-select-1.13.9/js/bootstrap-select.js"></script>
+<script src="../static/echarts/echarts.js"></script>
+<script src="../static/layui/layui.all.js"></script>
+<script src="../static/js/home.js"></script>
+<script src="../static/js/util.js"></script>
+
+</body>
+
+</html>
