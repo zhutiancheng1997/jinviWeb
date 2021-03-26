@@ -5,16 +5,18 @@ var form =layui.form;
 $(function () {
     laydate.render({
         elem: '#test1'
+        ,type:'datetime'
         ,done: function(value, date, endDate){
             // startTime = (new Date(value)).getTime();
-            console.log(typeof value); //得到日期生成的值，如：2017-08-18
-            console.log(date); //得到日期时间对象：{year: 2017, month: 8, date: 18, hours: 0, minutes: 0, seconds: 0}
-            console.log(endDate); //得结束的日期时间对象，开启范围选择（range: true）才会返回。对象成员同上。
+            // console.log(typeof value); //得到日期生成的值，如：2017-08-18
+            // console.log(date); //得到日期时间对象：{year: 2017, month: 8, date: 18, hours: 0, minutes: 0, seconds: 0}
+            // console.log(endDate); //得结束的日期时间对象，开启范围选择（range: true）才会返回。对象成员同上。
         }
     });
 
     laydate.render({
         elem: '#test2'
+        ,type:'datetime'
         ,done: function(value, date, endDate){
             // endTime = (new Date(value)).getTime();
         }
@@ -85,6 +87,8 @@ function addMaterialId() {
         $("#equipTable").append(tr);
         //给新增行的单元格添加点击事件响应
         $("#equipTable td").on('click',function () {
+            //清空echart
+            echarts.init(document.getElementById('chart')).dispose(); // 销毁实例
             var equipId = $(this).attr("name");
             var equipName = $(this)[0].innerText;
             if(!equipId) return;
@@ -135,7 +139,7 @@ function pdoSuccess(v) {
         return;
     }
     voMap = v.data;
-    var keys = Object.keys(voMap);
+    var keys = Object.keys(voMap);//多个id
     if(keys.length==0) return;
     var mycolumn = [{
         "field": "id",
@@ -159,15 +163,30 @@ function pdoSuccess(v) {
         "field": "shift",
         "title": "班次"
     }];
-    //v中是PDO数组，先取出第一个来，确定表格的列名
-    $.each(voMap[keys[0]].pdoVo.items,function (i,item) {
-        mycolumn.push(
-            {
-                "field": item.name,
-                "title": item.name + '(' + item.unit + ')',
-                "sortable": true
-            });
-    });
+    //voMap的key是id,value是包含pdovo和pdpvo的数组，先取出第一个pdovo来，确定表格的列名
+    var pdpVo=voMap[keys[0]].pdpVo;
+    var colMapKeys = Object.keys(pdpVo.colMap);
+    var fieldPrefix =colMapKeys[0].split(".");//有时候列名有前缀，提前保存。
+    if(fieldPrefix.length>1){
+        fieldPrefix = fieldPrefix[0];
+    }else{
+        fieldPrefix='';
+    }
+    // var pdoVo=voMap[keys[0]].pdoVo;
+    var fieldSet =new Set();
+    // $.each(pdoVo.items,function (i,item) {
+    //     var nameAppendStr='';
+    //     //如果单位不为空的时候，名称后面加上单位
+    //     if(item.unit!==""){
+    //         nameAppendStr ='(' + item.unit + ')';
+    //     }
+    //     mycolumn.push(
+    //         {
+    //             "field": item.name,
+    //             "title": item.name + nameAppendStr,
+    //             "sortable": true
+    //         });
+    // });
     //拼装表格数据
     var dat = [];
 
@@ -183,6 +202,20 @@ function pdoSuccess(v) {
             "shift": it.shift
         };
         $.each(it.items,function (j,jtem) {
+            if(!fieldSet.has(jtem.name)){
+                fieldSet.add(jtem.name);
+                var nameAppendStr='';
+                //如果单位不为空的时候，名称后面加上单位
+                if(jtem.unit!==""){
+                    nameAppendStr ='(' + jtem.unit + ')';
+                }
+                mycolumn.push(
+                    {
+                        "field": jtem.name,
+                        "title": jtem.name + nameAppendStr,
+                        "sortable": true
+                    });
+            }
             d[jtem.name]=jtem.value;
         });
         dat.push(d);
@@ -196,6 +229,7 @@ function pdoSuccess(v) {
         columns: mycolumn,
         onClickCell:function(field, value, row, $element){
             //当单元格被点击时 取单元格对应的field,通过预加载好的PDP数据取对应field的数据进行echart绘制
+            field=[fieldPrefix,field].join('.');//拼凑前缀
             if(perField.indexOf(field)===-1){
                 //y轴数据
                 var _y_axis=[];
@@ -203,6 +237,9 @@ function pdoSuccess(v) {
                 var c =0;
                 $.each(voMap,function (key,combineVo) {
                     var colMap = combineVo.pdpVo.colMap;
+                    console.log(colMap);
+                    console.log(field);
+
                     var yd={};
                     yd.name=key;
                     yd.type="line";

@@ -2,6 +2,7 @@ package com.ztcwork.demo.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -93,7 +94,7 @@ public class GzipUtil {
         for(int k=0;k<len;k++){
             int number = 0;
             for (int i = 0; i < 4; i++) {
-                number = number | ((0xff & bytes[k+i]) <<  i * 8);
+                number = number | ((0xff & bytes[4*k+i]) <<  i * 8);
             }
             rs[k] = number;
         }
@@ -104,16 +105,17 @@ public class GzipUtil {
      * @param bytes
      * @return
      */
-    public static float[] Bytes2Floats(byte[] bytes) {
+    public static Float[] Bytes2Floats(byte[] bytes) {
         if (bytes == null || bytes.length == 0) {
             return null;
         }
         int len =bytes.length/4;
-        float[] rs =new float[len];
+        Float[] rs =new Float[len];
         for(int k=0;k<len;k++){
             int number = 0;
-            for (int i = 0; i < 4; i++) {
-                number = number | ((0xff & bytes[k+i]) <<  i * 8);
+            for (int i = 0; i <4; i++) {
+                int dd = bytes[k*4+i];
+                number = number | ((0xff & dd) <<  i * 8);
             }
             rs[k] = Float.intBitsToFloat(number);
         }
@@ -178,5 +180,13 @@ public class GzipUtil {
 //        double[] rsdArray = Bytes2Doubles(bs);
         System.out.println();
 
+    }
+
+    public static Integer[] Bytes2Boolean(byte[] arr) {
+        Integer[] numbers = new Integer[arr.length];
+        for(int i=0;i<arr.length;i++){
+            numbers[i]=(int)arr[i];
+        }
+        return numbers;
     }
 }

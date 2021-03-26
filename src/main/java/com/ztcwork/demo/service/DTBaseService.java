@@ -63,11 +63,12 @@ public class DTBaseService {
                 Result r = iterator.next();
                 String rowkey = Bytes.toString(r.getRow());
                 //todo  根据rowkey的拼凑规则截取设备号
-                //todo PDO表的rowkey组成暂时是 前5位为材料号，后6位为采集站号，也就是设备号
+                //todo PDO表的rowkey组成暂时是 前10位为材料号，后5位为采集站号，也就是设备号
                 String equipId = rowkey.substring(
                         dcPDOConfig.MATERIAL_ID_INDEX,
                         dcPDOConfig.EQUIP_ID_INDEX);
                 equips.add(equipId);
+                logger.info("equipId:{}",equipId);
             }
         }catch (IOException e){
             logger.error("HBase查询出错,MaterialId:{}",id);
@@ -100,8 +101,8 @@ public class DTBaseService {
 
     public PDPVo getPDPByMaterialId(String id) {
         dcProduct pdp =null;
-        //todo 这里是因为没有PDP的数据，为了方便，查的PDR表。后面记得PDR改成PDP
-        Table t = this.getTable(dcProductConfig.PDR_TABLE_NAME);
+//        Table t = this.getTable(dcProductConfig.PDR_TABLE_NAME);
+        Table t = this.getTable(dcProductConfig.PDP_TABLE_NAME);
         Scan scan = new Scan();
         Filter filter =new PrefixFilter(Bytes.toBytes(id));
         scan.setFilter(filter);
@@ -191,19 +192,29 @@ public class DTBaseService {
         //解析成对应数据类型数组
         Number[] numbers = null;
         Class z = null;
-        if(type==dcColType.Double.getValue()){
+        if(type==dcColType.Single.getValue()) {
+            numbers=GzipUtil.Bytes2Floats(uncompress);
+        }
+        else if(type==9){
+            numbers = GzipUtil.Bytes2Floats(uncompress);
+        }
+        else if(type==dcColType.Double.getValue()){
             numbers = GzipUtil.Bytes2Doubles(uncompress);
         }else if(type==dcColType.Int32.getValue()){
             //对应int
             numbers =GzipUtil.Bytes2Ints(uncompress);
-//            columnVo.setIntArr(ints);
         }else if(type==dcColType.Int64.getValue()){
             //todo 长整型的处理
+            numbers=null;
         }else if(type==dcColType.Boolean.getValue()){
             //todo 布尔类型的处理
+            numbers = GzipUtil.Bytes2Boolean(uncompress);
         }
         if(numbers==null) return columnVo;
         int scale =100;
+        if(numbers.length<1000){
+            return columnVo.setNumberArr(numbers);
+        }
         int x =numbers.length /scale;
         List<Number> numberList =new ArrayList<>();
         for(int i =0;i<x;i++){
@@ -357,7 +368,14 @@ public class DTBaseService {
                     pdo.setFieldValue(dcPDO._Fields.findByName(colName), Bytes.toString(CellUtil.cloneValue(kv)));
                 } else {
                     List<String> nameAndUnit = StrUtil.splitTrim(colName, dcPDOConfig.SPLIT);
-                    dcDetail d = new dcDetail(nameAndUnit.get(0), nameAndUnit.get(1), Bytes.toString(CellUtil.cloneValue(kv)));
+                    String name="";String unit="";
+                    if(nameAndUnit.size()==1){
+                        name=nameAndUnit.get(0);
+                    }else if(nameAndUnit.size()==2){
+                        name=nameAndUnit.get(0);
+                        unit=nameAndUnit.get(1);
+                    }
+                    dcDetail d = new dcDetail(name, unit, Bytes.toString(CellUtil.cloneValue(kv)));
                     details.add(d);
                 }
             }
@@ -380,22 +398,22 @@ public class DTBaseService {
             dvos.add(dvo);
         }
         //todo 删除
-        DetailVo dvo1 =new DetailVo()
-                .setName("温度")
-                .setUnit("°")
-                .setValue("100");
-        DetailVo dvo2 =new DetailVo()
-                .setName("长度")
-                .setUnit("cm")
-                .setValue("230");
-        //MINO四辊粗轧机.ABB_BENDING_ON:
-        DetailVo dvo3 =new DetailVo()
-                .setName("MINO四辊粗轧机.ABB_BENDING_ON")
-                .setUnit("cm")
-                .setValue("234");
-        dvos.add(dvo1);
-        dvos.add(dvo2);
-        dvos.add(dvo3);
+//        DetailVo dvo1 =new DetailVo()
+//                .setName("温度")
+//                .setUnit("°")
+//                .setValue("100");
+//        DetailVo dvo2 =new DetailVo()
+//                .setName("长度")
+//                .setUnit("cm")
+//                .setValue("230");
+//        //MINO四辊粗轧机.ABB_BENDING_ON:
+//        DetailVo dvo3 =new DetailVo()
+//                .setName("MINO四辊粗轧机.ABB_BENDING_ON")
+//                .setUnit("cm")
+//                .setValue("234");
+//        dvos.add(dvo1);
+//        dvos.add(dvo2);
+//        dvos.add(dvo3);
         PDOVo vo =new PDOVo()
                 .setDeviceName(pdo.getDeviceName())
                 .setEndTime(pdo.getEndTime())
@@ -407,11 +425,6 @@ public class DTBaseService {
         return vo;
     }
 
-    public static void main(String[] args) {
-        Number a = new Double(1.2);
-        Number b =new Integer(1);
-        System.out.println(a.doubleValue()+b.doubleValue());
-    }
 
     public List<MaterialIdAndEquipsVo> getMaterialIdByTime(Long startTime, Long endTime) {
         Table table = getTable(dcPDOConfig.PDO_TABLE_NAME);
@@ -425,14 +438,15 @@ public class DTBaseService {
             if(!iterator.hasNext()){return null;}
             while(iterator.hasNext()){
                 Result r = iterator.next();
-                //todo substring(0,5)需要改 不确定是否是0, 5
                 String rowkey = Bytes.toString(r.getRow());
-                String materialId =rowkey.substring(0,5);
-                String equip =rowkey.substring(5,10);
+                String materialId =rowkey.substring(0,dcPDOConfig.MATERIAL_ID_INDEX);
+                String equip =rowkey.substring(dcPDOConfig.MATERIAL_ID_INDEX,dcPDOConfig.EQUIP_ID_INDEX);
                 if(map.containsKey(materialId)){
                     map.get(materialId).add(equip);
                 }else{
-                    map.put(materialId,new ArrayList<>());
+                    List<String> eqs =new ArrayList<>();
+                    eqs.add(equip);
+                    map.put(materialId,eqs);
                 }
             }
             vos = map.entrySet().stream()

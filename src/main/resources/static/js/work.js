@@ -73,13 +73,16 @@ function initEquipTable() {
                             layer.msg("没有对应的PDP数据");return;
                         }
                         pdpData=r.data;
+                        var tagPrefix = Object.keys(pdpData.colMap)[0].split(".")[0];
                         // var tds = $("#dataTable").find("td");
                         var tds = $("#pdoTable").find("td");
                         //给pdo表添加单元格单击事件
                         $.each(tds,function (i,item) {
                             $(item).on('click',function () {
                                 var td = $("#pdoTable").find("th")[i];
-                                var colName = $(td).attr("data-field");
+                                //pdo数据中的Name少一个前缀，导致td中少前缀，在这里加上
+                                var colName = tagPrefix+"."+$(td).attr("data-field");
+                                // colName=
                                 if(pdpData.colMap[colName]){
                                     var colData =pdpData.colMap[colName];
                                     var arr =colData.numberArr;
@@ -124,7 +127,8 @@ function initEquipTable() {
                                         ],
                                         series: [{
                                             data: dt,
-                                            type: 'scatter'
+                                            // type: 'scatter'
+                                            type: 'line'
                                         }]
                                     };
                                     setTimeout(myChart.setOption(option), 500);
@@ -141,6 +145,7 @@ function initEquipTable() {
         });
     });
 }
+
 //使用layui-table
 function loadPdoTable1(v){
     if (v.code != 0) {
@@ -199,6 +204,7 @@ function loadPdoTable1(v){
     });
 }
 
+pdoData={};
 //使用的bootstrap-table
 function loadPdoTable(v) {
 
@@ -208,6 +214,8 @@ function loadPdoTable(v) {
         return;
     }
     v = v.data;
+    pdoData=v;
+
     var arr = v.items;
     var dat = [];
     dat.push({
@@ -240,10 +248,15 @@ function loadPdoTable(v) {
 
     $.each(arr, function (i, item) {
         var field = item.name;
+        var nameAppendStr='';
+        //如果单位不为空的时候，名称后面加上单位
+        if(item.unit!==""){
+            nameAppendStr ='(' + item.unit + ')';
+        }
         mycolumn.push(
             {
                 "field": field,
-                "title": item.name + '(' + item.unit + ')',
+                "title": item.name + nameAppendStr,
                 "sortable": true
             });
         dat[0][field] = item.value;
@@ -279,7 +292,6 @@ function loadPdoTable(v) {
                     cols
                     ,csvdt
                     ,'csv');
-
             }
         },//给按钮注册事件
         formatter: function (value, row, index) {
@@ -288,6 +300,8 @@ function loadPdoTable(v) {
             return result;
         } 
     });
+    //先清空表
+    $('#pdoTable').bootstrapTable('destroy');
     //加载表
     $("#pdoTable").bootstrapTable({
         data: dat,
@@ -300,18 +314,24 @@ var test;
  * 根据id搜索对应卷号经过的设备 并且将对应单元格染色
  */
 function searchEquip() {
+    var val = $("#PDOId").val();
+    if(val==="") {
+        layer.msg("输入不合法");
+        return;
+    }
+    if(val===materialId){
+        return;
+    }
+    materialId = val;
     //清空上一次加载的内容
+    echarts.init(document.getElementById('pdpChart')).dispose(); // 销毁实例
+    $('#pdoTable').bootstrapTable('destroy');
     $("#equipTable").css("display","table");
     var tds=document.getElementsByTagName("td");
     $.each(tds,function (i, item) {
         tds[i].style.backgroundColor="white";
     });
 
-    materialId = $("#PDOId").val();
-    if(materialId==="") {
-        layer.msg("输入不合法");
-        return;
-    }
     var url = "/getEquip/"+materialId;
     $.ajax({
         url:url,
@@ -333,12 +353,5 @@ function searchEquip() {
         }
     });
 
-
-}
-
-/**
- * 染色的表格被单击，触发事件。加载对应的PDO作为表格展示，并且加载对应的PDP作为echart图展示
- */
-function tdOnClick() {
 
 }

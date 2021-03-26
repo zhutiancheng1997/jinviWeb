@@ -9,7 +9,7 @@ import java.util.Set;
 public class dcPDOConfig {
 
     //rowkey组成  材料号+设备号（采集站号）
-    public static int MATERIAL_ID_INDEX=5;
+    public static int MATERIAL_ID_INDEX=10;
     public static int EQUIP_ID_INDEX=MATERIAL_ID_INDEX+6;
 
     //表名
